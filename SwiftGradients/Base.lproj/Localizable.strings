@@ -7,6 +7,6 @@
 */
 
 "close" = "Close";
-"saved" = "Saved";
+"saved" = "Gradient saved";
 "unable_to_save" = "Unable to save gradient";
 "cannot_access_photos" = "Cannot access Saved Photos Album - please check Settings";
