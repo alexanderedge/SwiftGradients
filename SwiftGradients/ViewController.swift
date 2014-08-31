@@ -10,10 +10,15 @@ import UIKit
 import AudioToolbox
 import AssetsLibrary
 
+enum GradientSaveState {
+    case Idle
+    case Saving
+    case Saved
+}
+
 class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     
-    let kInfoButtonSideLength : CGFloat = 44.0;
-    let kInfoButtonMargin : CGFloat = 10.0;
+    var saveState : GradientSaveState = .Idle
     
     @IBOutlet weak var scrollView : UIScrollView!
     @IBOutlet weak var gradientView : GradientView!
@@ -42,21 +47,24 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
     @IBAction func handleRotation(gr : UIRotationGestureRecognizer) {
         if gr.state == .Began {
             gr.rotation = self.gradientView.rotation;
-        }
-        else if gr.state == .Changed {
+        } else if gr.state == .Changed {
             self.gradientView.rotation = gr.rotation
         }
     }
     
     @IBAction func handleTap(gr : UITapGestureRecognizer) {
-        if (self.saveIndicator.superview != nil) {
-            self.hideSaveIndicator()
-        } else {
-            self.saveGradient()
+        switch self.saveState {
+            case .Idle:
+                self.saveGradient()
+            case .Saved:
+                self.hideSaveIndicator()
+            case .Saving:
+                return // save in progress... do nothing
         }
     }
     
     func saveGradient () {
+        self.saveState = .Saving
         UIGraphicsBeginImageContextWithOptions(self.view.bounds.size, true, 0.0)
         self.view.drawViewHierarchyInRect(self.view.bounds, afterScreenUpdates: false)
         let screenshot = UIGraphicsGetImageFromCurrentImageContext()
@@ -68,9 +76,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
     }
     
     func image(image : UIImage, didFinishSavingWithError error : NSError!, contextInfo : UnsafePointer<Void>) {
-        
         if error != nil {
-            
             var alertController : UIAlertController?
             
             if error.code == ALAssetsLibraryAccessUserDeniedError || error.code == ALAssetsLibraryAccessGloballyDeniedError {
@@ -82,10 +88,13 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
             }
             
             alertController?.addAction(UIAlertAction(title: NSLocalizedString("close", comment: ""), style: .Cancel, handler: nil))
-            self.presentViewController(alertController, animated: true, completion: nil)
+            self.presentViewController(alertController, animated: true, completion: { () -> Void in
+                self.saveState = .Idle
+            })
             
         } else {
-            self.showSaveIndicator();
+            self.saveState = .Saved
+            self.showSaveIndicator()
         }
     }
     
@@ -105,6 +114,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
             btn.transform = CGAffineTransformMakeScale(0.01, 0.01)
             }, completion: { (finished : Bool) -> Void in
                 btn.removeFromSuperview();
+                self.saveState = .Idle
         })
     }
     
