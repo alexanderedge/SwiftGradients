@@ -1,7 +1,7 @@
 SwiftGradients
 ==============
 
-Gradient app (mostly) converted to Swift. Comments / critique welcome.
+Gradient app (mostly) converted to Swift. Comments / critiques / pull requests welcome.
 
 The original app is written in Objective-C and is available [here](https://github.com/alexanderedge/Gradient).
 
