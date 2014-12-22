@@ -8,6 +8,18 @@
 
 import UIKit
 
+extension UIApplication {
+    func pps_registerForRemoteNotifications() {
+        let registerNewWay = self.respondsToSelector(Selector("registerForRemoteNotifications"));
+        if (registerNewWay) {
+            self.registerUserNotificationSettings(UIUserNotificationSettings(forTypes: .Alert | .Sound | .Badge, categories: nil));
+            self.registerForRemoteNotifications();
+        } else {
+            self.registerForRemoteNotificationTypes(.Alert | .Sound | .Badge);
+        }
+    }
+}
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
                             
@@ -17,6 +29,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication!, didFinishLaunchingWithOptions launchOptions: NSDictionary!) -> Bool {
         // Override point for customization after application launch.
         application.applicationSupportsShakeToEdit = true
+        
+        self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
+        self.window?.rootViewController = ViewController()
+        self.window?.makeKeyAndVisible()
         return true
     }
 

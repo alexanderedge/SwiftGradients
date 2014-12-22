@@ -6,16 +6,24 @@
       "scale" : "1x"
     },
     {
-      "size" : "29x29",
       "idiom" : "iphone",
-      "filename" : "58 - Settings & Spotlight.png",
+      "size" : "29x29",
       "scale" : "2x"
     },
     {
-      "size" : "40x40",
       "idiom" : "iphone",
-      "filename" : "spotlight 80.png",
+      "size" : "29x29",
+      "scale" : "3x"
+    },
+    {
+      "idiom" : "iphone",
+      "size" : "40x40",
       "scale" : "2x"
+    },
+    {
+      "idiom" : "iphone",
+      "size" : "40x40",
+      "scale" : "3x"
     },
     {
       "idiom" : "iphone",
@@ -23,16 +31,19 @@
       "scale" : "1x"
     },
     {
-      "size" : "57x57",
       "idiom" : "iphone",
-      "filename" : "114 - App Icon.png",
+      "size" : "57x57",
       "scale" : "2x"
     },
     {
+      "idiom" : "iphone",
       "size" : "60x60",
+      "scale" : "2x"
+    },
+    {
       "idiom" : "iphone",
-      "filename" : "120 x 120 app icon.png",
-      "scale" : "2x"
+      "size" : "60x60",
+      "scale" : "3x"
     },
     {
       "idiom" : "ipad",
@@ -40,9 +51,8 @@
       "scale" : "1x"
     },
     {
-      "size" : "29x29",
       "idiom" : "ipad",
-      "filename" : "58 - Settings & Spotlight-1.png",
+      "size" : "29x29",
       "scale" : "2x"
     },
     {
@@ -51,9 +61,8 @@
       "scale" : "1x"
     },
     {
+      "idiom" : "ipad",
       "size" : "40x40",
-      "idiom" : "ipad",
-      "filename" : "spotlight 80-1.png",
       "scale" : "2x"
     },
     {
@@ -62,9 +71,8 @@
       "scale" : "1x"
     },
     {
+      "idiom" : "ipad",
       "size" : "50x50",
-      "idiom" : "ipad",
-      "filename" : "iPad Retina 100 - Spotlight.png",
       "scale" : "2x"
     },
     {
@@ -73,22 +81,24 @@
       "scale" : "1x"
     },
     {
-      "size" : "72x72",
       "idiom" : "ipad",
-      "filename" : "iPad Retina 144 - App Icon.png",
+      "size" : "72x72",
       "scale" : "2x"
     },
     {
-      "size" : "76x76",
       "idiom" : "ipad",
-      "filename" : " iPad Mini 76 icon.png",
+      "size" : "76x76",
       "scale" : "1x"
     },
     {
-      "size" : "76x76",
       "idiom" : "ipad",
-      "filename" : " iPad Mini 152 icon.png",
+      "size" : "76x76",
       "scale" : "2x"
+    },
+    {
+      "idiom" : "car",
+      "size" : "120x120",
+      "scale" : "1x"
     }
   ],
   "info" : {
