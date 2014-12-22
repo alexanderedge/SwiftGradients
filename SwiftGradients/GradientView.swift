@@ -26,20 +26,38 @@ class GradientLayer : CAGradientLayer {
     
     func changeGradient(animated : Bool) {
         
-        let newColours = NSMutableArray.array()
+        var newColours = NSMutableArray()
         for _ in 1...numberOfColours {
             newColours.addObject(UIColor.randomColour().CGColor)
         }
 
+        let angle = randomAngle()
+        let startPoint = startPointForAngle(angle)
+        let endPoint = endPointForAngle(angle)
+        
         if (animated) {
             let anim = CABasicAnimation(keyPath: "colors")
             anim.fromValue = self.colors
             anim.toValue = newColours
             anim.duration = animationDuration
             self.addAnimation(anim, forKey: "changeColours")
+
+            let startPointAnim = CABasicAnimation(keyPath: "startPoint")
+            startPointAnim.fromValue = NSValue(CGPoint:self.startPoint)
+            startPointAnim.toValue = NSValue(CGPoint:startPoint)
+            startPointAnim.duration = animationDuration
+            self.addAnimation(startPointAnim, forKey: "changeStartPoint")
+            
+            let endPointAnim = CABasicAnimation(keyPath: "colors")
+            endPointAnim.fromValue = NSValue(CGPoint:self.endPoint)
+            endPointAnim.toValue = NSValue(CGPoint:endPoint)
+            endPointAnim.duration = animationDuration
+            self.addAnimation(endPointAnim, forKey: "changeEndPoint")
         }
-        
-        self.colors = newColours;
+
+        self.colors = newColours
+        self.startPoint = startPoint
+        self.endPoint = endPoint
     }
     
     func rotate(angle : CGFloat) {
@@ -54,19 +72,24 @@ class GradientLayer : CAGradientLayer {
     func endPointForAngle(angle : CGFloat) -> CGPoint {
         return CGPointMake(0.5 - (sin(angle) / 2.0), 0.5 + cos(angle) / 2.0)
     }
+    
+    func randomAngle() -> CGFloat {
+        return CGFloat(arc4random_uniform(1000)) / 1000.0 * CGFloat(M_PI)
+    }
 }
 
 class GradientView : UIView {
+
+    var gradient : CGGradientRef?
     
     var rotation : CGFloat = 0.0 {
         willSet(newRotation) {
             let layer : GradientLayer = self.layer as GradientLayer
             layer.rotate(newRotation);
         }
-    }
-    
-    func randomAngle() -> CGFloat {
-        return CGFloat(arc4random_uniform(1000)) / 1000.0 * CGFloat(M_PI)
+        didSet(newRotation) {
+            self.setNeedsDisplay()
+        }
     }
     
     override func willMoveToSuperview(newSuperview: UIView?) {
@@ -75,9 +98,10 @@ class GradientView : UIView {
     }
     
     func changeGradient(animated : Bool) {
+        
         let layer : GradientLayer = self.layer as GradientLayer
         layer.changeGradient(animated)
-        self.rotation = randomAngle()
+
     }
     
     override class func layerClass() -> AnyClass {
