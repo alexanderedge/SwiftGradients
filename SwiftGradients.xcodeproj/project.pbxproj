@@ -9,9 +9,8 @@
 /* Begin PBXBuildFile section */
 		DE3535C919B3387D00AC9A44 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE3535C819B3387D00AC9A44 /* AppDelegate.swift */; };
 		DE3535CB19B3387D00AC9A44 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE3535CA19B3387D00AC9A44 /* ViewController.swift */; };
-		DE3535CE19B3387D00AC9A44 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DE3535CC19B3387D00AC9A44 /* Main.storyboard */; };
-		DE3535D019B3387D00AC9A44 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DE3535CF19B3387D00AC9A44 /* Images.xcassets */; };
 		DE3535DC19B3387D00AC9A44 /* SwiftGradientsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE3535DB19B3387D00AC9A44 /* SwiftGradientsTests.swift */; };
+		DE8EE5781A2A8EF900F3A565 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DE8EE5771A2A8EF900F3A565 /* Images.xcassets */; };
 		DEF3AAC919B33F5100A22E73 /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEF3AAC819B33F5100A22E73 /* GradientView.swift */; };
 		DEF3AACF19B3612200A22E73 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = DEF3AAD119B3612200A22E73 /* Localizable.strings */; };
 /* End PBXBuildFile section */
@@ -31,11 +30,10 @@
 		DE3535C719B3387D00AC9A44 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DE3535C819B3387D00AC9A44 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DE3535CA19B3387D00AC9A44 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		DE3535CD19B3387D00AC9A44 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		DE3535CF19B3387D00AC9A44 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		DE3535D519B3387D00AC9A44 /* SwiftGradientsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftGradientsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE3535DA19B3387D00AC9A44 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DE3535DB19B3387D00AC9A44 /* SwiftGradientsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftGradientsTests.swift; sourceTree = "<group>"; };
+		DE8EE5771A2A8EF900F3A565 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		DEF3AAC819B33F5100A22E73 /* GradientView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		DEF3AAD019B3612200A22E73 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -82,9 +80,8 @@
 				DE3535C819B3387D00AC9A44 /* AppDelegate.swift */,
 				DE3535CA19B3387D00AC9A44 /* ViewController.swift */,
 				DEF3AAC819B33F5100A22E73 /* GradientView.swift */,
-				DE3535CC19B3387D00AC9A44 /* Main.storyboard */,
-				DE3535CF19B3387D00AC9A44 /* Images.xcassets */,
 				DE3535C619B3387D00AC9A44 /* Supporting Files */,
+				DE8EE5771A2A8EF900F3A565 /* Images.xcassets */,
 			);
 			path = SwiftGradients;
 			sourceTree = "<group>";
@@ -195,9 +192,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DE3535CE19B3387D00AC9A44 /* Main.storyboard in Resources */,
+				DE8EE5781A2A8EF900F3A565 /* Images.xcassets in Resources */,
 				DEF3AACF19B3612200A22E73 /* Localizable.strings in Resources */,
-				DE3535D019B3387D00AC9A44 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -240,14 +236,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		DE3535CC19B3387D00AC9A44 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				DE3535CD19B3387D00AC9A44 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		DEF3AAD119B3612200A22E73 /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -344,6 +332,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				INFOPLIST_FILE = SwiftGradients/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -355,6 +344,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				INFOPLIST_FILE = SwiftGradients/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
