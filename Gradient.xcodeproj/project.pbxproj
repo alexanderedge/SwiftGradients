@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DE7301EC1A701A89008237DD /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = DE7301EE1A701A89008237DD /* Localizable.strings */; };
+		DE7301FA1A702449008237DD /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DE7301F81A702449008237DD /* InfoPlist.strings */; };
 		DE8E8BD51A571B66003042EA /* ColourWheel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE8E8BD41A571B66003042EA /* ColourWheel.swift */; };
 		DECF8BA01A48870E00D49B26 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DECF8B9F1A48870E00D49B26 /* AppDelegate.swift */; };
 		DECF8BA71A48870E00D49B26 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DECF8BA61A48870E00D49B26 /* Images.xcassets */; };
@@ -16,10 +18,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		DE7301ED1A701A89008237DD /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
+		DE7301F41A7021AA008237DD /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DE7301F91A702449008237DD /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		DE8E8BD41A571B66003042EA /* ColourWheel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColourWheel.swift; sourceTree = "<group>"; };
 		DECF8B3E1A487A1F00D49B26 /* GradientView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
-		DECF8B9B1A48870E00D49B26 /* Gradient-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Gradient-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		DECF8B9E1A48870E00D49B26 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DECF8B9B1A48870E00D49B26 /* Gradient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Gradient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DECF8B9F1A48870E00D49B26 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DECF8BA61A48870E00D49B26 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		DECF8BA91A48870E00D49B26 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -37,19 +41,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		35EF02424D16C73DEF43D316 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		DECF8B251A4879E100D49B26 = {
 			isa = PBXGroup;
 			children = (
 				DECF8B3E1A487A1F00D49B26 /* GradientView.swift */,
 				DECF8B9C1A48870E00D49B26 /* Gradient-iOS */,
 				DECF8B301A4879E100D49B26 /* Products */,
+				35EF02424D16C73DEF43D316 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
 		DECF8B301A4879E100D49B26 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				DECF8B9B1A48870E00D49B26 /* Gradient-iOS.app */,
+				DECF8B9B1A48870E00D49B26 /* Gradient.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -63,6 +75,8 @@
 				DECF8BA61A48870E00D49B26 /* Images.xcassets */,
 				DECF8BA81A48870E00D49B26 /* LaunchScreen.xib */,
 				DECF8B9D1A48870E00D49B26 /* Supporting Files */,
+				DE7301EE1A701A89008237DD /* Localizable.strings */,
+				DE7301F81A702449008237DD /* InfoPlist.strings */,
 			);
 			path = "Gradient-iOS";
 			sourceTree = "<group>";
@@ -70,7 +84,7 @@
 		DECF8B9D1A48870E00D49B26 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				DECF8B9E1A48870E00D49B26 /* Info.plist */,
+				DE7301F41A7021AA008237DD /* Info.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -78,9 +92,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		DECF8B9A1A48870E00D49B26 /* Gradient-iOS */ = {
+		DECF8B9A1A48870E00D49B26 /* Gradient */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DECF8BB71A48870E00D49B26 /* Build configuration list for PBXNativeTarget "Gradient-iOS" */;
+			buildConfigurationList = DECF8BB71A48870E00D49B26 /* Build configuration list for PBXNativeTarget "Gradient" */;
 			buildPhases = (
 				DECF8B971A48870E00D49B26 /* Sources */,
 				DECF8B981A48870E00D49B26 /* Frameworks */,
@@ -90,9 +104,9 @@
 			);
 			dependencies = (
 			);
-			name = "Gradient-iOS";
+			name = Gradient;
 			productName = "Gradient-iOS";
-			productReference = DECF8B9B1A48870E00D49B26 /* Gradient-iOS.app */;
+			productReference = DECF8B9B1A48870E00D49B26 /* Gradient.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -122,7 +136,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				DECF8B9A1A48870E00D49B26 /* Gradient-iOS */,
+				DECF8B9A1A48870E00D49B26 /* Gradient */,
 			);
 		};
 /* End PBXProject section */
@@ -132,6 +146,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DE7301EC1A701A89008237DD /* Localizable.strings in Resources */,
+				DE7301FA1A702449008237DD /* InfoPlist.strings in Resources */,
 				DECF8BAA1A48870E00D49B26 /* LaunchScreen.xib in Resources */,
 				DECF8BA71A48870E00D49B26 /* Images.xcassets in Resources */,
 			);
@@ -154,6 +170,22 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
+		DE7301EE1A701A89008237DD /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DE7301ED1A701A89008237DD /* Base */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		DE7301F81A702449008237DD /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DE7301F91A702449008237DD /* Base */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
 		DECF8BA81A48870E00D49B26 /* LaunchScreen.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -199,6 +231,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -234,6 +267,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 			};
@@ -248,7 +282,6 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Gradient-iOS/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -262,7 +295,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = "Gradient-iOS/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -283,7 +315,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DECF8BB71A48870E00D49B26 /* Build configuration list for PBXNativeTarget "Gradient-iOS" */ = {
+		DECF8BB71A48870E00D49B26 /* Build configuration list for PBXNativeTarget "Gradient" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DECF8BB81A48870E00D49B26 /* Debug */,
