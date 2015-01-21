@@ -60,44 +60,42 @@ extension UIView {
         self.transform = CGAffineTransformMakeScale(0.01, 0.01)
         }, completion: completion)
     }
+    
+    func fadeIn(completion : ((Bool) -> ())?) {
+        UIView.animateWithDuration(fadeAnimationDuration(), delay: 0.0, options: .BeginFromCurrentState, animations: { () -> Void in
+            self.alpha = 1.0
+            }, completion: completion)
+    }
+    
+    func fadeOut(completion : ((Bool) -> ())?) {
+        UIView.animateWithDuration(fadeAnimationDuration(), delay: 0.0, options: .BeginFromCurrentState, animations: { () -> Void in
+            self.alpha = 0.0
+            }, completion: completion)
+    }
+}
 
 class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     
-    var saveState : GradientSaveState = .Idle
-    var scrollView : UIScrollView
-    var gradientView : GradientView
-    var colourWheel : ColourWheel?
-    
-    // changing colours
-    var startAngle : CGFloat = 0 // angle of touch when the long-press occurs
-    var startColour : UIColor? // colour before change
-    var anchorPoint : CGPoint = CGPointZero // the corner which we're anchored to
-    var colourToChange : Int = 0 // the position (0 or 1) of the gradient colour to change
-    
-    override init() {
+    lazy private var scrollView : UIScrollView = {
         var scrollView = UIScrollView(frame: CGRectZero)
         scrollView.maximumZoomScale = CGFloat.max
         scrollView.bouncesZoom = false
         scrollView.bounces = false
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = false
-        self.scrollView = scrollView
-        
-        var gradientView = GradientView(frame: CGRectZero)
-        scrollView.addSubview(gradientView)
-        self.gradientView = gradientView
-        
-        super.init(nibName:nil,bundle:nil)
-    }
-
-    required init(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+        scrollView.delegate = self
+        return scrollView
+    }()
     
-    lazy var saveIndicator : UIButton = {
+    lazy private var gradientView : GradientView = {
+        return GradientView(frame: CGRectZero)
+    }()
+    
+    lazy private var saveIndicator : UIButton = {
         let btn = UIButton(frame: CGRectMake(0, 0, 100.0, 100.0))
         btn.layer.cornerRadius = 50.0
         btn.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.6)
+        btn.tintColor = UIColor.whiteColor()
         
         btn.titleLabel?.numberOfLines = 0
         btn.titleLabel?.textAlignment = .Center
@@ -106,10 +104,98 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
         btn.titleLabel?.lineBreakMode = .ByWordWrapping
         
         btn.contentVerticalAlignment = .Center
-        btn.setTitle(NSLocalizedString("saved", comment: "").uppercaseString, forState: .Normal)
+        btn.setTitle(NSLocalizedString("saved", comment: "gradient saved").uppercaseStringWithLocale(NSLocale.autoupdatingCurrentLocale()), forState: .Normal)
         btn.addTarget(self, action: "sharePressed:", forControlEvents: .TouchUpInside)
+        
         return btn
     }()
+    
+    lazy private var infoButton : UIButton = {
+        let btn = UIButton(frame: CGRectMake(0, 0, 50.0, 50.0))
+        btn.tintColor = UIColor.blackColor().colorWithAlphaComponent(0.6)
+        btn.setImage(UIImage(named: "Info")?.imageWithRenderingMode(.AlwaysTemplate), forState: .Normal)
+        btn.accessibilityHint = NSLocalizedString("information_hint", comment: "accessibility hint for info button")
+        btn.accessibilityLabel = NSLocalizedString("information", comment: "")
+        btn.addTarget(self, action: "infoPressed:", forControlEvents: .TouchUpInside)
+        return btn;
+    }()
+    
+    private var saveState : GradientSaveState = .Idle
+    private var colourWheel : ColourWheel?
+    
+    // changing colours
+    private var startAngle : CGFloat = 0 // angle of touch when the long-press occurs
+    private var startColour : UIColor? // colour before change
+    private var anchorPoint : CGPoint = CGPointZero // the corner which we're anchored to
+    private var colourToChange : Int = 0 // the position (0 or 1) of the gradient colour to change
+    
+    // MARK: lifecycle
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        self.view.backgroundColor = UIColor.greenColor()
+        
+        self.scrollView.frame = self.view.bounds
+        self.gradientView.frame = self.scrollView.bounds;
+        self.scrollView.addSubview(self.gradientView)
+        self.view.addSubview(self.scrollView)
+
+        let rotate = UIRotationGestureRecognizer(target: self, action: "handleRotation:")
+        rotate.delegate = self
+        self.view.addGestureRecognizer(rotate)
+        
+        let tap = UITapGestureRecognizer(target: self, action: "handleTap:")
+        self.view.addGestureRecognizer(tap)
+        
+        let longPress = UILongPressGestureRecognizer(target: self, action: "handleLongPress:")
+        longPress.delegate = self;
+        self.view.addGestureRecognizer(longPress)
+        
+    }
+    
+    func viewForZoomingInScrollView(scrollView: UIScrollView!) -> UIView! {
+        if self.saveState == .Idle {
+            return self.gradientView
+        } else {
+            return nil
+        }
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    override func prefersStatusBarHidden() -> Bool {
+        return true;
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        self.becomeFirstResponder()
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        self.resignFirstResponder()
+        super.viewWillDisappear(animated)
+    }
+    
+    override func motionBegan(motion: UIEventSubtype, withEvent event: UIEvent) {
+        if motion == .MotionShake {
+            self.hideSaveIndicator()
+            self.hideInfoButton()
+            self.gradientView.changeGradient(true)
+            AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
+        }
+        super.motionBegan(motion, withEvent: event)
+    }
+    
+    // MARK: Gesture recognisers
+    
+    func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return self.saveState == .Idle ? true : false
+    }
     
     func gestureRecognizer(gestureRecognizer: UIGestureRecognizer!, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer!) -> Bool {
         return true
@@ -129,6 +215,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
                 self.saveGradient()
             case .Saved:
                 self.hideSaveIndicator()
+                self.hideInfoButton()
             case .Saving:
                 return // save in progress... do nothing
         }
@@ -165,14 +252,39 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
             
             self.anchorPoint = closestCorner
             
+            
+            
+            // calculate which colour to change
+            
+            let gradientAngle = self.gradientView.rotation
+            
+            // create a vector through the centre of the screen, at the given angle
+            let y = (CGRectGetWidth(self.view.bounds) / 2) * tan(gradientAngle)
+            
+            let a = CGPointMake(0, (CGRectGetHeight(self.view.bounds) / 2) - y)
+            let b = CGPointMake(CGRectGetWidth(self.view.bounds), (CGRectGetHeight(self.view.bounds) / 2) + y)
+            
+            if gradientAngle > CGFloat(-M_PI_2) && gradientAngle < CGFloat(M_PI_2) {
+                if crossProduct(a, b: b, c: touchPoint) > 0 {
+                    self.colourToChange = 1
+                } else {
+                    self.colourToChange = 0
+                }
+            } else {
+                
+                if crossProduct(a, b: b, c: touchPoint) > 0 {
+                    self.colourToChange = 0
+                } else {
+                    self.colourToChange = 1
+                }
+            }
+            
             // find the angle of the touch point
             // zero is horizontal
             
             let angle = angleOfTouchPoint(touchPoint, fromPoint: closestCorner)
             
-            let colour = self.gradientView.colourAtPoint(touchPoint)
-            
-            self.startColour = colour
+            let colour = self.gradientView.colorAtPosition(self.colourToChange)
             
             var hue : CGFloat = 0
             var saturation : CGFloat = 0
@@ -194,33 +306,6 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
             self.startAngle = angle
             self.startColour = colour
             
-            // calculate which colour to change
-            
-            let gradientAngle = self.gradientView.rotation
-            NSLog("gradient is at \(gradientAngle)")
-            
-            // create a vector through the centre of the screen, at the given angle
-            let y = (CGRectGetWidth(self.view.bounds) / 2) * tan(gradientAngle)
-            
-            let a = CGPointMake(0, (CGRectGetHeight(self.view.bounds) / 2) - y)
-            let b = CGPointMake(CGRectGetWidth(self.view.bounds), (CGRectGetHeight(self.view.bounds) / 2) + y)
-            
-            NSLog("vector runs from \(a) to \(b)")
-            
-            if gradientAngle > CGFloat(-M_PI_2) && gradientAngle < CGFloat(M_PI_2) {
-                if crossProduct(a, b: b, c: touchPoint) > 0 {
-                    self.colourToChange = 1
-                } else {
-                    self.colourToChange = 0
-                }
-            } else {
-                
-                if crossProduct(a, b: b, c: touchPoint) > 0 {
-                    self.colourToChange = 0
-                } else {
-                    self.colourToChange = 1
-                }
-            }
             
         } else if gr.state == .Changed {
           
@@ -248,111 +333,92 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
         }
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        self.scrollView.frame = self.view.bounds
-        self.gradientView.frame = self.scrollView.bounds;
-        self.view.addSubview(self.scrollView)
-        
-        self.scrollView.delegate = self
-        
-        let rotate = UIRotationGestureRecognizer(target: self, action: "handleRotation:")
-        rotate.delegate = self
-        self.view.addGestureRecognizer(rotate)
-        
-        let tap = UITapGestureRecognizer(target: self, action: "handleTap:")
-        self.view.addGestureRecognizer(tap)
-        
-        let longPress = UILongPressGestureRecognizer(target: self, action: "handleLongPress:")
-        self.view.addGestureRecognizer(longPress)
-        
-    }
+    // MARK: Saving gradients
     
-    func saveGradient () {
-        self.saveState = .Saving
-        UIGraphicsBeginImageContextWithOptions(self.view.bounds.size, true, 0.0)
-        self.view.drawViewHierarchyInRect(self.view.bounds, afterScreenUpdates: false)
+    private func imageFromCurrentGradient() -> UIImage {
+        UIGraphicsBeginImageContextWithOptions(self.scrollView.frame.size, true, 0.0)
+        self.scrollView.drawViewHierarchyInRect(self.scrollView.frame, afterScreenUpdates: false)
         let screenshot = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        // convert to PNG so that it doesn't save a JPEG
+        // convert to PNG so that it doesn't save a JPEG (default)
         let pngData = UIImagePNGRepresentation(screenshot)
-        let gradient = UIImage(data: pngData)
+        return UIImage(data: pngData)!
+    }
+    
+    private func saveGradient () {
+        self.saveState = .Saving
+        let gradient = self.imageFromCurrentGradient()
+        
         UIImageWriteToSavedPhotosAlbum(gradient, self, "image:didFinishSavingWithError:contextInfo:", nil)
     }
     
     func image(image : UIImage, didFinishSavingWithError error : NSError!, contextInfo : UnsafePointer<Void>) {
         if error != nil {
-            var alertController : UIAlertController?
-            
-            if error.code == ALAssetsLibraryAccessUserDeniedError || error.code == ALAssetsLibraryAccessGloballyDeniedError {
-                alertController = UIAlertController(title: NSLocalizedString("unable_to_save", comment: ""), message: NSLocalizedString("cannot_access_photos", comment: ""), preferredStyle: .Alert)
-                
-            } else {
-                alertController = UIAlertController(title: NSLocalizedString("unable_to_save", comment: ""), message: error.localizedDescription, preferredStyle: .Alert)
-            }
-            
-            alertController!.addAction(UIAlertAction(title: NSLocalizedString("close", comment: ""), style: .Cancel, handler: nil))
-            self.presentViewController(alertController!, animated: true, completion: { () -> Void in
-                self.saveState = .Idle
-            })
-            
+            // there was a problem saving the gradient
+            // just display the activity controller instead
+            self.showActivityControllerForImage(image)
+            self.saveState = .Idle
         } else {
             self.saveState = .Saved
             self.showSaveIndicator()
+            self.showInfoButton()
         }
     }
     
-    func showSaveIndicator () {
+    private func showInfoButton () {
+        let btn = self.infoButton
+        btn.frame = CGRectMake(CGRectGetWidth(self.view.bounds) - CGRectGetWidth(btn.bounds), 0, CGRectGetWidth(btn.bounds), CGRectGetHeight(btn.bounds))
+        btn.alpha = 0.0
+        self.view.addSubview(btn)
+        btn.fadeIn(nil)
+    }
+    
+    private func hideInfoButton () {
+        self.infoButton.fadeOut { (finished : Bool) -> () in
+            self.infoButton.removeFromSuperview()
+        }
+    }
+    
+    private func showSaveIndicator () {
         let btn = self.saveIndicator
         btn.center = self.view.center
         btn.transform = CGAffineTransformMakeScale(0.01, 0.01)
         self.view.addSubview(btn)
-        btn.grow(nil)
+        btn.grow { (finished : Bool) -> () in
+            UIView.transitionWithView(btn, duration: 0.5, options: .TransitionCrossDissolve, animations: { () -> Void in
+                btn.setTitle(nil, forState: .Normal)
+                btn.setImage(UIImage(named: "Action")?.imageWithRenderingMode(.AlwaysTemplate), forState: .Normal)
+            }, completion: nil)
+        }
     }
     
-    func hideSaveIndicator () {
+    private func hideSaveIndicator () {
         let btn = self.saveIndicator
         btn.shrink { (finished : Bool) -> () in
             btn.removeFromSuperview()
+            btn.setTitle(NSLocalizedString("saved", comment: "").uppercaseStringWithLocale(NSLocale.autoupdatingCurrentLocale()), forState: .Normal)
+            btn.setImage(nil, forState: .Normal)
             self.saveState = .Idle
         }
     }
     
     func sharePressed (button : UIButton) {
-        
+        let gradient = self.imageFromCurrentGradient()
+        self.showActivityControllerForImage(gradient)
     }
     
-    func viewForZoomingInScrollView(scrollView: UIScrollView!) -> UIView! {
-        return self.gradientView
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    func infoPressed (button : UIButton) {
+        NSLog("Show some info")
     }
     
-    override func prefersStatusBarHidden() -> Bool {
-        return true;
-    }
-    
-    override func viewDidAppear(animated: Bool) {
-        super.viewDidAppear(animated)
-        self.becomeFirstResponder()
-    }
-    
-    override func viewWillDisappear(animated: Bool) {
-        self.resignFirstResponder()
-        super.viewWillDisappear(animated)
-    }
-
-    override func motionBegan(motion: UIEventSubtype, withEvent event: UIEvent) {
-        if motion == .MotionShake {
-            self.gradientView.changeGradient(true)
-            AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
+    private func showActivityControllerForImage(image : UIImage) {
+        let activityController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
+        if activityController.respondsToSelector("popoverPresentationController") {
+            activityController.popoverPresentationController?.sourceView = self.saveIndicator
+            activityController.popoverPresentationController?.sourceRect = CGRectInset(self.saveIndicator.bounds, 0, -10)
+            activityController.popoverPresentationController?.permittedArrowDirections = .Up
         }
-        super.motionBegan(motion, withEvent: event)
+        self.presentViewController(activityController, animated: true, completion: nil)
     }
-    
 }
 
