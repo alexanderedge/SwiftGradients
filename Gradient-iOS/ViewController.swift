@@ -78,6 +78,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
     
     lazy private var scrollView : UIScrollView = {
         var scrollView = UIScrollView(frame: CGRectZero)
+        scrollView.autoresizingMask = .FlexibleWidth | .FlexibleHeight
         scrollView.maximumZoomScale = CGFloat.max
         scrollView.bouncesZoom = false
         scrollView.bounces = false
@@ -88,7 +89,9 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
     }()
     
     lazy private var gradientView : GradientView = {
-        return GradientView(frame: CGRectZero)
+        let gradientView = GradientView(frame: CGRectZero)
+        gradientView.autoresizingMask = .FlexibleWidth | .FlexibleHeight
+        return gradientView
     }()
     
     lazy private var saveIndicator : UIButton = {
@@ -96,7 +99,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
         btn.layer.cornerRadius = 50.0
         btn.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.6)
         btn.tintColor = UIColor.whiteColor()
-        
+        btn.autoresizingMask = .FlexibleTopMargin | .FlexibleLeftMargin | .FlexibleRightMargin | .FlexibleBottomMargin
         btn.titleLabel?.numberOfLines = 0
         btn.titleLabel?.textAlignment = .Center
         btn.titleLabel?.font = UIFont(name: "Avenir Next Condensed Ultra Light", size: 17.0)
@@ -112,6 +115,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
     
     lazy private var infoButton : UIButton = {
         let btn = UIButton(frame: CGRectMake(0, 0, 50.0, 50.0))
+        btn.autoresizingMask = .FlexibleLeftMargin | .FlexibleBottomMargin
         btn.tintColor = UIColor.blackColor().colorWithAlphaComponent(0.6)
         btn.setImage(UIImage(named: "Info")?.imageWithRenderingMode(.AlwaysTemplate), forState: .Normal)
         btn.accessibilityHint = NSLocalizedString("information_hint", comment: "accessibility hint for info button")
@@ -134,10 +138,8 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = UIColor.greenColor()
-        
         self.scrollView.frame = self.view.bounds
-        self.gradientView.frame = self.scrollView.bounds;
+        self.gradientView.frame = self.scrollView.bounds
         self.scrollView.addSubview(self.gradientView)
         self.view.addSubview(self.scrollView)
 
@@ -415,8 +417,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
         let activityController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
         if activityController.respondsToSelector("popoverPresentationController") {
             activityController.popoverPresentationController?.sourceView = self.saveIndicator
-            activityController.popoverPresentationController?.sourceRect = CGRectInset(self.saveIndicator.bounds, 0, -10)
-            activityController.popoverPresentationController?.permittedArrowDirections = .Up
+            activityController.popoverPresentationController?.sourceRect = CGRectInset(self.saveIndicator.bounds, -10, -10)
         }
         self.presentViewController(activityController, animated: true, completion: nil)
     }
