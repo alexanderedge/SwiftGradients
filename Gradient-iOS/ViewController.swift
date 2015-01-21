@@ -32,31 +32,34 @@ enum GradientSaveState {
 
 extension UIView {
     
-    func animationDuration () -> NSTimeInterval {
+    private func springAnimationDuration () -> NSTimeInterval {
+        return 0.75
+    }
+    
+    private func fadeAnimationDuration () -> NSTimeInterval {
         return 0.5
     }
     
-    func animationDamping () -> CGFloat {
+    private func animationDamping () -> CGFloat {
         return 0.6
     }
     
-    func animationInitialSpringVelocity() -> CGFloat {
+    private func animationInitialSpringVelocity() -> CGFloat {
         return 0.2
     }
     
     func grow(completion : ((Bool) -> ())?) {
         self.transform = CGAffineTransformMakeScale(0.01, 0.01)
-        UIView.animateWithDuration(animationDuration(), delay: 0.0, usingSpringWithDamping: animationDamping(), initialSpringVelocity: animationInitialSpringVelocity(), options: .BeginFromCurrentState, animations: { () -> Void in
+        UIView.animateWithDuration(springAnimationDuration(), delay: 0.0, usingSpringWithDamping: animationDamping(), initialSpringVelocity: animationInitialSpringVelocity(), options: .BeginFromCurrentState, animations: { () -> Void in
             self.transform = CGAffineTransformIdentity
             }, completion: completion)
     }
     
     func shrink(completion : ((Bool) -> ())?) {
-        UIView.animateWithDuration(animationDuration(), delay: 0.0, usingSpringWithDamping: animationDamping(), initialSpringVelocity: animationInitialSpringVelocity(), options: .BeginFromCurrentState, animations: { () -> Void in
+        UIView.animateWithDuration(springAnimationDuration(), delay: 0.0, usingSpringWithDamping: animationDamping(), initialSpringVelocity: animationInitialSpringVelocity(), options: .BeginFromCurrentState, animations: { () -> Void in
         self.transform = CGAffineTransformMakeScale(0.01, 0.01)
         }, completion: completion)
     }
-}
 
 class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     
