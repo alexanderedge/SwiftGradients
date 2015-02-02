@@ -17,3 +17,7 @@
 "cannot_access_photos" = "Unable to access photos";
 
 "close" = "Close";
+
+"credits" = "Gradient is a\nNitzan Hermon\nand\nAlex Edge\ncollaboration";
+
+"instructions" = "Swipe to explore\nTap to capture\nShake to restart";
