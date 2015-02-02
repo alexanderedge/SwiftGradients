@@ -28,6 +28,20 @@ enum GradientSaveState {
     case Idle
     case Saving
     case Saved
+extension NSURL {
+    
+    convenience init?(twitterUsername : String) {
+        if UIApplication.sharedApplication().canOpenURL(NSURL(string: "tweetbot://")!) {
+            self.init(string: "tweetbot:///user_profile/\(twitterUsername)" )
+        } else if UIApplication.sharedApplication().canOpenURL(NSURL(string: "twitterrific://")!) {
+            self.init(string: "twitterrific:///profile?screen_name=\(twitterUsername)" )
+        } else if UIApplication.sharedApplication().canOpenURL(NSURL(string: "twitter://")!) {
+            self.init(string: "twitter://user?screen_name=\(twitterUsername)" )
+        } else {
+            self.init(string: "https://twitter.com/\(twitterUsername)")
+        }
+    }
+
 }
 
 extension UIView {
