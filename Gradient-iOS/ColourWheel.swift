@@ -26,8 +26,9 @@ class ColourWheel : UIView {
     
     var saturation : CGFloat = 1
     var brightness : CGFloat = 1
-    var startHue : CGFloat = 0
-    var startAngle : CGFloat = 0
+    var focalHue : CGFloat = 0
+    var focalAngle : CGFloat = 0
+    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -58,43 +59,47 @@ class ColourWheel : UIView {
         CGContextSetAllowsAntialiasing(ctx, true)
         CGContextSetShouldAntialias(ctx, true)
         
-        for quadrant in 0..<4 {
+        let offset = focalAngle / CGFloat(2 * M_PI)
+        
+        let startHue = moduloHue(focalHue - offset)
+        
+        let segments = 360
+        let arcAngle = CGFloat(2 * M_PI) / CGFloat(segments)
+        
+        var start : CGFloat = 0
+        var end : CGFloat = 0
+        
+        for segment in 0..<segments {
             
-            let segments = 90
-            let arcAngle = CGFloat(M_PI / 2) / CGFloat(segments)
+            CGContextSaveGState(ctx)
             
-            var start : CGFloat = startAngle + CGFloat(quadrant) * CGFloat(M_PI) / 2
-            var end : CGFloat = 0
+            let hue = moduloHue(startHue + 1 / CGFloat(segments) * CGFloat(segment))
             
-            for segment in 0..<segments {
-                
-                CGContextSaveGState(ctx)
-                
-                let hue =  moduloHue(startHue + 1 / CGFloat(segments) * CGFloat(segment))
-                let colour = UIColor(hue: CGFloat(hue), saturation: saturation, brightness: brightness, alpha: 1)
-                colour.setFill()
-                colour.setStroke()
-                end = start + arcAngle
-                
-                let arcStartX = center.x + rad * cos(start)
-                let arcStartY = center.y + rad * sin(start)
-                
-                CGContextMoveToPoint(ctx, center.x + rad / 2 * cos(start), center.y + rad / 2 * sin(start))
-                CGContextAddArc(ctx, center.x, center.y, rad, start, end, 0)
-                CGContextAddArc(ctx, center.x, center.y, rad/2, end, start, 1)
-                CGContextDrawPath(ctx, kCGPathFillStroke)
-                
-                CGContextRestoreGState(ctx)
-                
-                start = end
-            }
+            let colour = UIColor(hue: CGFloat(hue), saturation: saturation, brightness: brightness, alpha: 1)
+            colour.setFill()
+            colour.setStroke()
+            end = start + arcAngle
+            
+            let arcStartX = center.x + rad * cos(start)
+            let arcStartY = center.y + rad * sin(start)
+            
+            CGContextMoveToPoint(ctx, center.x, center.y)
+            CGContextAddArc(ctx, center.x, center.y, rad, start, end, 0)
+            CGContextDrawPath(ctx, kCGPathFillStroke)
+            
+            CGContextRestoreGState(ctx)
+            
+            start = end
         }
+        
+        
     }
     
     private func moduloHue(hue : CGFloat) -> CGFloat {
-
         if hue < 1 {
             return hue
+        } else if hue < 1 {
+            return hue + 1
         } else {
             return hue - 1
         }
