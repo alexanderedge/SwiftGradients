@@ -24,10 +24,20 @@ import UIKit
 import AudioToolbox
 import AssetsLibrary
 
-enum GradientSaveState {
+enum AppState {
     case Idle
     case Saving
     case Saved
+    case CreditsShown
+}
+
+enum Corner {
+    case TopLeft
+    case TopRight
+    case BottomLeft
+    case BottomRight
+}
+
 extension NSURL {
     
     convenience init?(twitterUsername : String) {
@@ -46,8 +56,26 @@ extension NSURL {
 
 extension UIView {
     
+    func cornerClosestToPoint(point: CGPoint) -> Corner {
+        if point.x > CGRectGetMidX(self.bounds) {
+            // right
+            if point.y > CGRectGetMidY(self.bounds) {
+                return .BottomRight
+            } else {
+                return .TopRight
+            }
+        } else {
+            // left
+            if point.y > CGRectGetMidY(self.bounds) {
+                return .BottomLeft
+            } else {
+                return .TopLeft
+            }
+        }
+    }
+    
     private func springAnimationDuration () -> NSTimeInterval {
-        return 0.75
+        return 0.4
     }
     
     private func fadeAnimationDuration () -> NSTimeInterval {
@@ -55,35 +83,37 @@ extension UIView {
     }
     
     private func animationDamping () -> CGFloat {
-        return 0.6
+        return 0.8
     }
     
     private func animationInitialSpringVelocity() -> CGFloat {
-        return 0.2
+        return 1.0
     }
     
-    func grow(completion : ((Bool) -> ())?) {
+    func grow(completion : ((Bool) -> Void)?) {
         self.transform = CGAffineTransformMakeScale(0.01, 0.01)
         UIView.animateWithDuration(springAnimationDuration(), delay: 0.0, usingSpringWithDamping: animationDamping(), initialSpringVelocity: animationInitialSpringVelocity(), options: .BeginFromCurrentState, animations: { () -> Void in
             self.transform = CGAffineTransformIdentity
             }, completion: completion)
     }
     
-    func shrink(completion : ((Bool) -> ())?) {
+    func shrink(completion : ((Bool) -> Void)?) {
         UIView.animateWithDuration(springAnimationDuration(), delay: 0.0, usingSpringWithDamping: animationDamping(), initialSpringVelocity: animationInitialSpringVelocity(), options: .BeginFromCurrentState, animations: { () -> Void in
-        self.transform = CGAffineTransformMakeScale(0.01, 0.01)
-        }, completion: completion)
-    }
-    
-    func fadeIn(completion : ((Bool) -> ())?) {
-        UIView.animateWithDuration(fadeAnimationDuration(), delay: 0.0, options: .BeginFromCurrentState, animations: { () -> Void in
-            self.alpha = 1.0
+            self.transform = CGAffineTransformMakeScale(0.01, 0.01)
             }, completion: completion)
     }
     
-    func fadeOut(completion : ((Bool) -> ())?) {
+    func fadeIn(completion : ((Bool) -> Void)?) {
+        self.alpha = 0
         UIView.animateWithDuration(fadeAnimationDuration(), delay: 0.0, options: .BeginFromCurrentState, animations: { () -> Void in
-            self.alpha = 0.0
+            self.alpha = 1
+            }, completion: completion)
+    }
+    
+    func fadeOut(completion : ((Bool) -> Void)?) {
+        self.alpha = 1
+        UIView.animateWithDuration(fadeAnimationDuration(), delay: 0.0, options: .BeginFromCurrentState, animations: { () -> Void in
+            self.alpha = 0
             }, completion: completion)
     }
 }
@@ -108,38 +138,12 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
         return gradientView
     }()
     
-    lazy private var saveIndicator : UIButton = {
-        let btn = UIButton(frame: CGRectMake(0, 0, 100.0, 100.0))
-        btn.layer.cornerRadius = 50.0
-        btn.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.6)
-        btn.tintColor = UIColor.whiteColor()
-        btn.autoresizingMask = .FlexibleTopMargin | .FlexibleLeftMargin | .FlexibleRightMargin | .FlexibleBottomMargin
-        btn.titleLabel?.numberOfLines = 0
-        btn.titleLabel?.textAlignment = .Center
-        btn.titleLabel?.font = UIFont(name: "Avenir Next Condensed Ultra Light", size: 17.0)
-        btn.titleLabel?.center = btn.center
-        btn.titleLabel?.lineBreakMode = .ByWordWrapping
-        
-        btn.contentVerticalAlignment = .Center
-        btn.setTitle(NSLocalizedString("saved", comment: "gradient saved").uppercaseStringWithLocale(NSLocale.autoupdatingCurrentLocale()), forState: .Normal)
-        btn.addTarget(self, action: "sharePressed:", forControlEvents: .TouchUpInside)
-        
-        return btn
-    }()
-    
-    lazy private var infoButton : UIButton = {
-        let btn = UIButton(frame: CGRectMake(0, 0, 50.0, 50.0))
-        btn.autoresizingMask = .FlexibleLeftMargin | .FlexibleBottomMargin
-        btn.tintColor = UIColor.blackColor().colorWithAlphaComponent(0.6)
-        btn.setImage(UIImage(named: "Info")?.imageWithRenderingMode(.AlwaysTemplate), forState: .Normal)
-        btn.accessibilityHint = NSLocalizedString("information_hint", comment: "accessibility hint for info button")
-        btn.accessibilityLabel = NSLocalizedString("information", comment: "")
-        btn.addTarget(self, action: "infoPressed:", forControlEvents: .TouchUpInside)
-        return btn;
-    }()
-    
-    private var saveState : GradientSaveState = .Idle
+    private var state : AppState = .Idle
     private var colourWheel : ColourWheel?
+    private var instructions : UILabel?
+    private var credits : UITextView?
+    private var infoButton : UIButton?
+    private var saveIndicator : UIButton?
     
     // changing colours
     private var startAngle : CGFloat = 0 // angle of touch when the long-press occurs
@@ -161,17 +165,19 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
         rotate.delegate = self
         self.view.addGestureRecognizer(rotate)
         
-        let tap = UITapGestureRecognizer(target: self, action: "handleTap:")
-        self.view.addGestureRecognizer(tap)
-        
         let longPress = UILongPressGestureRecognizer(target: self, action: "handleLongPress:")
         longPress.delegate = self;
         self.view.addGestureRecognizer(longPress)
         
+        let tap = UITapGestureRecognizer(target: self, action: "handleTap:")
+        tap.requireGestureRecognizerToFail(longPress)
+        self.view.addGestureRecognizer(tap)
+        
+        
     }
     
     func viewForZoomingInScrollView(scrollView: UIScrollView!) -> UIView! {
-        if self.saveState == .Idle {
+        if self.state == .Idle {
             return self.gradientView
         } else {
             return nil
@@ -187,9 +193,37 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
         return true;
     }
     
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // add instructions
+        let label = UILabel(frame: self.view.bounds)
+        label.autoresizingMask = .FlexibleTopMargin | .FlexibleLeftMargin | .FlexibleRightMargin | .FlexibleBottomMargin
+        label.backgroundColor = UIColor.blackColor()
+        label.numberOfLines = 0
+        label.font = UIFont(name: "Helvetica Neue", size: 30)
+        label.userInteractionEnabled = true
+        var paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = .Center
+        paragraphStyle.lineHeightMultiple = 2
+        label.attributedText = NSAttributedString(string: NSLocalizedString("instructions", comment: "app instructions").uppercaseStringWithLocale(NSLocale.currentLocale()), attributes:[NSForegroundColorAttributeName : UIColor.whiteColor(), NSParagraphStyleAttributeName : paragraphStyle])
+        self.view.addSubview(label)
+        self.instructions = label;
+        
+    }
+    
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         self.becomeFirstResponder()
+        if let label = self.instructions {
+            UIView.animateWithDuration(0.5, delay: 2, options: nil, animations: { () -> Void in
+                label.alpha = 0
+                }) { (finished : Bool) -> Void in
+                    label.removeFromSuperview()
+                    self.instructions = nil
+            }
+        }
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -201,6 +235,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
         if motion == .MotionShake {
             self.hideSaveIndicator()
             self.hideInfoButton()
+            self.hideCredits()
             self.gradientView.changeGradient(true)
             AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
         }
@@ -210,7 +245,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
     // MARK: Gesture recognisers
     
     func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool {
-        return self.saveState == .Idle ? true : false
+        return self.state == .Idle ? true : false
     }
     
     func gestureRecognizer(gestureRecognizer: UIGestureRecognizer!, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer!) -> Bool {
@@ -226,26 +261,44 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
     }
     
     func handleTap(gr : UITapGestureRecognizer) {
-        switch self.saveState {
-            case .Idle:
-                self.saveGradient()
-            case .Saved:
-                self.hideSaveIndicator()
-                self.hideInfoButton()
-            case .Saving:
-                return // save in progress... do nothing
+        switch self.state {
+        case .Idle:
+            self.saveGradient()
+        case .Saved:
+            self.hideSaveIndicator()
+            self.hideInfoButton()
+            self.hideCredits()
+        case .Saving:
+            return // save in progress... do nothing
+        case .CreditsShown:
+            self.hideCredits()
+        }
+    }
+
+    private func transformForCorner(corner : Corner) -> CGAffineTransform {
+        switch corner {
+        case .TopLeft:
+            return CGAffineTransformIdentity
+        case .TopRight:
+            return CGAffineTransformMakeRotation(CGFloat(M_PI))
+        case .BottomLeft:
+            return CGAffineTransformIdentity
+        case .BottomRight:
+            return CGAffineTransformMakeRotation(CGFloat(M_PI))
         }
     }
     
-    private func cornerClosestToPoint(point: CGPoint, inView view: UIView) -> CGPoint {
-        var cornerPoint = CGPointZero
-        if point.x > CGRectGetMidX(view.bounds) {
-            cornerPoint.x = CGRectGetMaxX(view.bounds)
+    private func anchorPointForCorner(corner : Corner, inView view : UIView, inset : CGFloat = 0) -> CGPoint {
+        switch corner {
+        case .TopLeft:
+            return CGPointMake(inset, inset)
+        case .TopRight:
+            return CGPointMake(CGRectGetMaxX(view.bounds) - inset, inset)
+        case .BottomLeft:
+            return CGPointMake(inset,CGRectGetMaxY(view.bounds) - inset)
+        case .BottomRight:
+            return CGPointMake(CGRectGetMaxX(view.bounds) - inset,CGRectGetMaxY(view.bounds) - inset)
         }
-        if point.y > CGRectGetMidY(view.bounds) {
-            cornerPoint.y = CGRectGetMaxY(view.bounds)
-        }
-        return cornerPoint
     }
     
     private func angleOfTouchPoint(point: CGPoint, fromPoint: CGPoint) -> CGFloat {
@@ -264,11 +317,10 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
         if gr.state == .Began {
             
             // find the corner closest to the touch point
-            let closestCorner = cornerClosestToPoint(touchPoint, inView: self.view)
+            let closestCorner = self.view.cornerClosestToPoint(touchPoint)
+            let anchor = anchorPointForCorner(closestCorner, inView: self.view)
             
-            self.anchorPoint = closestCorner
-            
-            
+            self.anchorPoint = anchor
             
             // calculate which colour to change
             
@@ -298,7 +350,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
             // find the angle of the touch point
             // zero is horizontal
             
-            let angle = angleOfTouchPoint(touchPoint, fromPoint: closestCorner)
+            let angle = angleOfTouchPoint(touchPoint, fromPoint: anchor)
             
             let colour = self.gradientView.colorAtPosition(self.colourToChange)
             
@@ -309,14 +361,21 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
             colour.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
             
             var wheel = ColourWheel(frame : CGRectMake(0, 0, 200, 200))
-            wheel.center = closestCorner
+            wheel.center = anchorPointForCorner(closestCorner, inView: self.view, inset: 10)
             wheel.saturation = saturation
             wheel.brightness = brightness
-            wheel.startHue = hue
-            wheel.startAngle = angle
+            wheel.focalAngle = angle
+            wheel.focalHue = hue
+            
+            let targetTransform = transformForCorner(closestCorner)
+            
+            wheel.transform = CGAffineTransformConcat(targetTransform, CGAffineTransformMakeScale(0.01, 0.01))
             
             self.view.addSubview(wheel)
-            wheel.grow(nil)
+            // don't use the -grow method here since we already have a transform
+            UIView.animateWithDuration(0.4, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 1.0, options: nil, animations: { () -> Void in
+                wheel.transform = targetTransform
+            }, completion: nil)
             
             self.colourWheel = wheel
             self.startAngle = angle
@@ -333,7 +392,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
             let angleChange = angle - self.startAngle
             
             // express the delta in terms of hue
-            let hueChange = angleChange / CGFloat(M_PI_2)
+            let hueChange = angleChange / CGFloat(2 * M_PI)
             
             // calculate the new colour
             var newColor = self.startColour!.colorByShiftingHue(hueChange)
@@ -342,10 +401,14 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
             
         } else if gr.state == .Ended {
             
-            self.colourWheel?.shrink({ (finished : Bool) -> () in
-                self.colourWheel?.removeFromSuperview()
-                self.colourWheel = nil
-            })
+            if let view = self.colourWheel {
+                UIView.animateWithDuration(0.4, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 1.0, options: nil, animations: { () -> Void in
+                    view.transform = CGAffineTransformConcat(self.colourWheel!.transform, CGAffineTransformMakeScale(0.01, 0.01))
+                    }, completion : { (finished : Bool) -> Void in
+                        view.removeFromSuperview()
+                        self.colourWheel = nil
+                })
+            }
         }
     }
     
@@ -362,7 +425,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
     }
     
     private func saveGradient () {
-        self.saveState = .Saving
+        self.state = .Saving
         let gradient = self.imageFromCurrentGradient()
         
         UIImageWriteToSavedPhotosAlbum(gradient, self, "image:didFinishSavingWithError:contextInfo:", nil)
@@ -373,49 +436,116 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
             // there was a problem saving the gradient
             // just display the activity controller instead
             self.showActivityControllerForImage(image)
-            self.saveState = .Idle
+            self.state = .Idle
         } else {
-            self.saveState = .Saved
+            self.state = .Saved
             self.showSaveIndicator()
             self.showInfoButton()
         }
     }
     
     private func showInfoButton () {
-        let btn = self.infoButton
-        btn.frame = CGRectMake(CGRectGetWidth(self.view.bounds) - CGRectGetWidth(btn.bounds), 0, CGRectGetWidth(btn.bounds), CGRectGetHeight(btn.bounds))
-        btn.alpha = 0.0
+        let btn = UIButton(frame: CGRectMake(CGRectGetWidth(self.view.bounds) - 50, 0, 50, 50))
+        btn.autoresizingMask = .FlexibleLeftMargin | .FlexibleBottomMargin
+        btn.tintColor = UIColor.blackColor().colorWithAlphaComponent(0.6)
+        btn.setImage(UIImage(named: "Info")?.imageWithRenderingMode(.AlwaysTemplate), forState: .Normal)
+        btn.accessibilityHint = NSLocalizedString("information_hint", comment: "accessibility hint for info button")
+        btn.accessibilityLabel = NSLocalizedString("information", comment: "")
+        btn.addTarget(self, action: "infoPressed:", forControlEvents: .TouchUpInside)
         self.view.addSubview(btn)
         btn.fadeIn(nil)
+        self.infoButton = btn
     }
     
     private func hideInfoButton () {
-        self.infoButton.fadeOut { (finished : Bool) -> () in
-            self.infoButton.removeFromSuperview()
+        if let btn = self.infoButton {
+            btn.fadeOut({ (finished : Bool) -> Void in
+                btn.removeFromSuperview()
+                self.infoButton = nil
+            })
         }
     }
     
     private func showSaveIndicator () {
-        let btn = self.saveIndicator
+        let btn = UIButton(frame: CGRectMake(0, 0, 100.0, 100.0))
+        btn.layer.cornerRadius = 50.0
+        btn.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.6)
+        btn.tintColor = UIColor.whiteColor()
+        btn.autoresizingMask = .FlexibleTopMargin | .FlexibleLeftMargin | .FlexibleRightMargin | .FlexibleBottomMargin
+        btn.titleLabel?.numberOfLines = 0
+        btn.titleLabel?.textAlignment = .Center
+        btn.titleLabel?.font = UIFont(name: "Helvetica Neue", size: 17.0)
+        btn.titleLabel?.center = btn.center
+        btn.titleLabel?.lineBreakMode = .ByWordWrapping
+        
+        btn.contentVerticalAlignment = .Center
+        btn.setTitle(NSLocalizedString("saved", comment: "gradient saved").uppercaseStringWithLocale(NSLocale.autoupdatingCurrentLocale()), forState: .Normal)
+        btn.addTarget(self, action: "sharePressed:", forControlEvents: .TouchUpInside)
         btn.center = self.view.center
-        btn.transform = CGAffineTransformMakeScale(0.01, 0.01)
         self.view.addSubview(btn)
+        
         btn.grow { (finished : Bool) -> () in
             UIView.transitionWithView(btn, duration: 0.5, options: .TransitionCrossDissolve, animations: { () -> Void in
                 btn.setTitle(nil, forState: .Normal)
                 btn.setImage(UIImage(named: "Action")?.imageWithRenderingMode(.AlwaysTemplate), forState: .Normal)
-            }, completion: nil)
+                }, completion: nil)
         }
+        
+        self.saveIndicator = btn
+        
     }
     
     private func hideSaveIndicator () {
-        let btn = self.saveIndicator
-        btn.shrink { (finished : Bool) -> () in
-            btn.removeFromSuperview()
-            btn.setTitle(NSLocalizedString("saved", comment: "").uppercaseStringWithLocale(NSLocale.autoupdatingCurrentLocale()), forState: .Normal)
-            btn.setImage(nil, forState: .Normal)
-            self.saveState = .Idle
+        
+        if let btn = self.saveIndicator {
+            btn.shrink { (finished : Bool) -> () in
+                btn.removeFromSuperview()
+                self.saveIndicator = nil
+                self.state = .Idle
+            }
         }
+    }
+    
+    private func showCredits () {
+        
+        self.state = .CreditsShown
+        
+        self.infoButton?.hidden = true
+        
+        let textView = UITextView(frame: CGRectInset(self.view.bounds, 30, 30))
+        textView.editable = false
+        textView.scrollEnabled = false
+        textView.autoresizingMask = .FlexibleTopMargin | .FlexibleLeftMargin | .FlexibleRightMargin | .FlexibleBottomMargin
+        textView.backgroundColor = UIColor.blackColor()
+        textView.textContainer.lineFragmentPadding = 0
+        textView.textContainerInset = UIEdgeInsetsMake(50, 10, 50, 10)
+        textView.linkTextAttributes = [NSUnderlineStyleAttributeName : NSUnderlineStyle.StyleSingle.rawValue]
+        
+        var paragraphStyle : NSMutableParagraphStyle = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as NSMutableParagraphStyle
+        paragraphStyle.alignment = .Center
+        
+        var attrs : Dictionary <NSObject,AnyObject> = [NSForegroundColorAttributeName : UIColor.whiteColor(), NSFontAttributeName : UIFont(name: "Helvetica Neue", size: 32)!, NSParagraphStyleAttributeName : paragraphStyle]
+        
+        var str : NSString = NSLocalizedString("credits", comment: "app credits")
+        var attributedStr = NSMutableAttributedString(string: str, attributes: attrs)
+        
+        attributedStr.addAttribute(NSLinkAttributeName, value: NSURL(twitterUsername: "byedit")!, range: str.rangeOfString("Nitzan Hermon"))
+        attributedStr.addAttribute(NSLinkAttributeName, value: NSURL(twitterUsername: "alexedge")!, range: str.rangeOfString("Alex Edge"))
+        
+        textView.attributedText = attributedStr
+        textView.sizeToFit()
+        textView.center = self.view.center
+        self.view.addSubview(textView)
+        
+        self.credits = textView
+        
+    }
+    
+    private func hideCredits () {
+        self.infoButton?.hidden = false
+        self.credits?.removeFromSuperview()
+        self.credits = nil
+        self.state = .Saved
     }
     
     func sharePressed (button : UIButton) {
@@ -424,16 +554,21 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
     }
     
     func infoPressed (button : UIButton) {
-        NSLog("Show some info")
+        if self.credits == nil{
+            self.showCredits()
+        } else {
+            self.hideCredits()
+        }
     }
     
     private func showActivityControllerForImage(image : UIImage) {
         let activityController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
-        if activityController.respondsToSelector("popoverPresentationController") {
-            activityController.popoverPresentationController?.sourceView = self.saveIndicator
-            activityController.popoverPresentationController?.sourceRect = CGRectInset(self.saveIndicator.bounds, -10, -10)
+        if activityController.respondsToSelector("popoverPresentationController") && self.saveIndicator != nil {
+            activityController.popoverPresentationController?.sourceView = self.saveIndicator!
+            activityController.popoverPresentationController?.sourceRect = CGRectInset(self.saveIndicator!.bounds, -10, -10)
         }
         self.presentViewController(activityController, animated: true, completion: nil)
     }
+    
 }
 
