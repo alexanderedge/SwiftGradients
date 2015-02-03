@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:SwiftGradients.xcodeproj">
+      location = "self:Gradient.xcodeproj">
    </FileRef>
 </Workspace>

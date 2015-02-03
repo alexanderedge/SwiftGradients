@@ -1,0 +1,23 @@
+/* 
+  Localized.strings
+  Gradient
+
+  Created by Alexander G Edge on 21/01/2015.
+  Copyright (c) 2015 Alexander Edge Ltd. All rights reserved.
+*/
+
+"saved" = "Saved";
+
+"information" = "Information";
+
+"information_hint" = "Shows information about Gradient";
+
+"unable_to_save" = "Cannot save gradient";
+
+"cannot_access_photos" = "Unable to access photos";
+
+"close" = "Close";
+
+"credits" = "Gradient is a\nNitzan Hermon\nand Alex Edge\nCollaboration";
+
+"instructions" = "Swipe To Explore\nTap To Capture\nShake To Restart";
