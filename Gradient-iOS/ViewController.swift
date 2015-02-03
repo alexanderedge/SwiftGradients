@@ -509,25 +509,71 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
         }
     }
     
+    private func resizeCreditsWithTraitCollection(collection : UITraitCollection) {
+        var widthRatio : CGFloat = 0.7
+        var heightRatio : CGFloat = 0.7
+        
+        if collection.horizontalSizeClass == .Compact {
+            widthRatio = 0.9
+        }
+        
+        if collection.verticalSizeClass == .Compact {
+            heightRatio = 0.9
+        }
+        
+        let width = CGRectGetWidth(self.view.bounds) * widthRatio
+        let height = CGRectGetHeight(self.view.bounds) * heightRatio
+        
+        self.credits?.frame = CGRectMake((CGRectGetWidth(self.view.bounds) - width) / 2, (CGRectGetHeight(self.view.bounds) - height) / 2, width, height)
+    }
+    
+    override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        coordinator.animateAlongsideTransition({ (ctx : UIViewControllerTransitionCoordinatorContext!) -> Void in
+           self.resizeCreditsWithTraitCollection(self.traitCollection)
+            }, completion: nil)
+    }
+    
+    override func willTransitionToTraitCollection(newCollection: UITraitCollection, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        coordinator.animateAlongsideTransition({ (ctx : UIViewControllerTransitionCoordinatorContext!) -> Void in
+            self.resizeCreditsWithTraitCollection(newCollection)
+        }, completion: nil)
+    }
+    
     private func showCredits () {
         self.creditsShown = true
         
         self.infoButton?.hidden = true
         
-        let textView = UITextView(frame: self.view.bounds)
+        var widthRatio : CGFloat = 0.7
+        var heightRatio : CGFloat = 0.7
+        
+        if self.traitCollection.horizontalSizeClass == .Compact {
+            widthRatio = 0.9
+        }
+        
+        if self.traitCollection.verticalSizeClass == .Compact {
+            heightRatio = 0.9
+        }
+        
+        let width = CGRectGetWidth(self.view.bounds) * widthRatio
+        let height = CGRectGetHeight(self.view.bounds) * heightRatio
+        
+        let backingView = UITextView(frame: CGRectMake((CGRectGetWidth(self.view.bounds) - width) / 2, (CGRectGetHeight(self.view.bounds) - height) / 2, width, height))
+        backingView.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.94)
+        
+        let textView = UITextView(frame: backingView.bounds)
+        textView.backgroundColor = UIColor.clearColor()
         textView.editable = false
         textView.scrollEnabled = false
         textView.autoresizingMask = .FlexibleTopMargin | .FlexibleLeftMargin | .FlexibleRightMargin | .FlexibleBottomMargin
-        textView.backgroundColor = UIColor.blackColor()
         textView.textContainer.lineFragmentPadding = 0
-        textView.textContainerInset = UIEdgeInsetsMake(40, 40, 40, 40)
         textView.linkTextAttributes = [NSUnderlineStyleAttributeName : NSUnderlineStyle.StyleSingle.rawValue]
         
         var paragraphStyle : NSMutableParagraphStyle = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as NSMutableParagraphStyle
         paragraphStyle.alignment = .Center
         paragraphStyle.lineSpacing = 20
         
-        var attrs : Dictionary <NSObject,AnyObject> = [NSForegroundColorAttributeName : UIColor.whiteColor(), NSFontAttributeName : UIFont(name: "HelveticaNeue-Thin", size: 24)!, NSParagraphStyleAttributeName : paragraphStyle]
+        var attrs : Dictionary <NSObject,AnyObject> = [NSForegroundColorAttributeName : UIColor.whiteColor(), NSFontAttributeName : UIFont(name: "HelveticaNeue-Thin", size: 36)!, NSParagraphStyleAttributeName : paragraphStyle]
         
         var str : NSString = NSLocalizedString("credits", comment: "app credits")
         var attributedStr = NSMutableAttributedString(string: str, attributes: attrs)
@@ -537,10 +583,11 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
         
         textView.attributedText = attributedStr
         textView.sizeToFit()
-        textView.center = self.view.center
-        self.view.addSubview(textView)
+        textView.center = CGPointMake(CGRectGetMidX(backingView.bounds), CGRectGetMidY(backingView.bounds))
+        backingView.addSubview(textView)
+        self.view.addSubview(backingView)
         
-        self.credits = textView
+        self.credits = backingView
         
     }
     
