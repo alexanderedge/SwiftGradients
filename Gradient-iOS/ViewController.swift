@@ -514,13 +514,13 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
         
         self.infoButton?.hidden = true
         
-        let textView = UITextView(frame: CGRectInset(self.view.bounds, 30, 30))
+        let textView = UITextView(frame: self.view.bounds)
         textView.editable = false
         textView.scrollEnabled = false
         textView.autoresizingMask = .FlexibleTopMargin | .FlexibleLeftMargin | .FlexibleRightMargin | .FlexibleBottomMargin
         textView.backgroundColor = UIColor.blackColor()
         textView.textContainer.lineFragmentPadding = 0
-        textView.textContainerInset = UIEdgeInsetsMake(50, 10, 50, 10)
+        textView.textContainerInset = UIEdgeInsetsMake(40, 40, 40, 40)
         textView.linkTextAttributes = [NSUnderlineStyleAttributeName : NSUnderlineStyle.StyleSingle.rawValue]
         
         var paragraphStyle : NSMutableParagraphStyle = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as NSMutableParagraphStyle
