@@ -28,7 +28,6 @@ enum AppState {
     case Idle
     case Saving
     case Saved
-    case CreditsShown
 }
 
 enum Corner {
@@ -142,6 +141,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
     private var colourWheel : ColourWheel?
     private var instructions : UILabel?
     private var credits : UITextView?
+    private var creditsShown : Bool = false
     private var infoButton : UIButton?
     private var saveIndicator : UIButton?
     
@@ -231,11 +231,16 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
         super.viewWillDisappear(animated)
     }
     
+    private func reset() {
+        self.hideSaveIndicator()
+        self.hideInfoButton()
+        self.hideCredits()
+        self.state = .Idle
+    }
+    
     override func motionBegan(motion: UIEventSubtype, withEvent event: UIEvent) {
         if motion == .MotionShake {
-            self.hideSaveIndicator()
-            self.hideInfoButton()
-            self.hideCredits()
+            self.reset()
             self.gradientView.changeGradient(true)
             AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
         }
@@ -265,13 +270,13 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
         case .Idle:
             self.saveGradient()
         case .Saved:
-            self.hideSaveIndicator()
-            self.hideInfoButton()
-            self.hideCredits()
+            if creditsShown {
+                self.hideCredits()
+            } else {
+                self.reset()
+            }
         case .Saving:
             return // save in progress... do nothing
-        case .CreditsShown:
-            self.hideCredits()
         }
     }
 
@@ -496,19 +501,16 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
     }
     
     private func hideSaveIndicator () {
-        
         if let btn = self.saveIndicator {
             btn.shrink { (finished : Bool) -> () in
                 btn.removeFromSuperview()
                 self.saveIndicator = nil
-                self.state = .Idle
             }
         }
     }
     
     private func showCredits () {
-        
-        self.state = .CreditsShown
+        self.creditsShown = true
         
         self.infoButton?.hidden = true
         
@@ -545,7 +547,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
         self.infoButton?.hidden = false
         self.credits?.removeFromSuperview()
         self.credits = nil
-        self.state = .Saved
+        self.creditsShown = false
     }
     
     func sharePressed (button : UIButton) {
@@ -554,10 +556,10 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
     }
     
     func infoPressed (button : UIButton) {
-        if self.credits == nil{
-            self.showCredits()
-        } else {
+        if creditsShown {
             self.hideCredits()
+        } else {
+            self.showCredits()
         }
     }
     
