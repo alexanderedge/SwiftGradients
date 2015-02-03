@@ -525,6 +525,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
         
         var paragraphStyle : NSMutableParagraphStyle = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as NSMutableParagraphStyle
         paragraphStyle.alignment = .Center
+        paragraphStyle.lineSpacing = 20
         
         var attrs : Dictionary <NSObject,AnyObject> = [NSForegroundColorAttributeName : UIColor.whiteColor(), NSFontAttributeName : UIFont(name: "HelveticaNeue-Thin", size: 24)!, NSParagraphStyleAttributeName : paragraphStyle]
         
