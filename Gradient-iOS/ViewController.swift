@@ -202,7 +202,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
         label.autoresizingMask = .FlexibleTopMargin | .FlexibleLeftMargin | .FlexibleRightMargin | .FlexibleBottomMargin
         label.backgroundColor = UIColor.blackColor()
         label.numberOfLines = 0
-        label.font = UIFont(name: "Helvetica Neue", size: 30)
+        label.font = UIFont(name: "HelveticaNeue-Thin", size: 24)
         label.userInteractionEnabled = true
         var paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .Center
@@ -479,7 +479,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
         btn.autoresizingMask = .FlexibleTopMargin | .FlexibleLeftMargin | .FlexibleRightMargin | .FlexibleBottomMargin
         btn.titleLabel?.numberOfLines = 0
         btn.titleLabel?.textAlignment = .Center
-        btn.titleLabel?.font = UIFont(name: "Helvetica Neue", size: 17.0)
+        btn.titleLabel?.font = UIFont(name: "HelveticaNeue-Thin", size: 17.0)
         btn.titleLabel?.center = btn.center
         btn.titleLabel?.lineBreakMode = .ByWordWrapping
         
@@ -526,7 +526,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
         var paragraphStyle : NSMutableParagraphStyle = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as NSMutableParagraphStyle
         paragraphStyle.alignment = .Center
         
-        var attrs : Dictionary <NSObject,AnyObject> = [NSForegroundColorAttributeName : UIColor.whiteColor(), NSFontAttributeName : UIFont(name: "Helvetica Neue", size: 32)!, NSParagraphStyleAttributeName : paragraphStyle]
+        var attrs : Dictionary <NSObject,AnyObject> = [NSForegroundColorAttributeName : UIColor.whiteColor(), NSFontAttributeName : UIFont(name: "HelveticaNeue-Thin", size: 24)!, NSParagraphStyleAttributeName : paragraphStyle]
         
         var str : NSString = NSLocalizedString("credits", comment: "app credits")
         var attributedStr = NSMutableAttributedString(string: str, attributes: attrs)
