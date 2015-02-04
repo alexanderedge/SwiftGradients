@@ -10,6 +10,8 @@
 		DE7301EC1A701A89008237DD /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = DE7301EE1A701A89008237DD /* Localizable.strings */; };
 		DE7301FA1A702449008237DD /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DE7301F81A702449008237DD /* InfoPlist.strings */; };
 		DE8E8BD51A571B66003042EA /* ColourWheel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE8E8BD41A571B66003042EA /* ColourWheel.swift */; };
+		DEA4641D1A829D7E007E42AF /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = DEA4641C1A829D7E007E42AF /* README.md */; };
+		DEA4641F1A829E0C007E42AF /* License.md in Sources */ = {isa = PBXBuildFile; fileRef = DEA4641E1A829E0C007E42AF /* License.md */; };
 		DECF8BA01A48870E00D49B26 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DECF8B9F1A48870E00D49B26 /* AppDelegate.swift */; };
 		DECF8BA71A48870E00D49B26 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DECF8BA61A48870E00D49B26 /* Images.xcassets */; };
 		DECF8BAA1A48870E00D49B26 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = DECF8BA81A48870E00D49B26 /* LaunchScreen.xib */; };
@@ -22,6 +24,8 @@
 		DE7301F41A7021AA008237DD /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DE7301F91A702449008237DD /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		DE8E8BD41A571B66003042EA /* ColourWheel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColourWheel.swift; sourceTree = "<group>"; };
+		DEA4641C1A829D7E007E42AF /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		DEA4641E1A829E0C007E42AF /* License.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = License.md; sourceTree = "<group>"; };
 		DECF8B3E1A487A1F00D49B26 /* GradientView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		DECF8B9B1A48870E00D49B26 /* Gradient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Gradient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DECF8B9F1A48870E00D49B26 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -51,6 +55,8 @@
 		DECF8B251A4879E100D49B26 = {
 			isa = PBXGroup;
 			children = (
+				DEA4641E1A829E0C007E42AF /* License.md */,
+				DEA4641C1A829D7E007E42AF /* README.md */,
 				DECF8B3E1A487A1F00D49B26 /* GradientView.swift */,
 				DECF8B9C1A48870E00D49B26 /* Gradient-iOS */,
 				DECF8B301A4879E100D49B26 /* Products */,
@@ -162,6 +168,8 @@
 			files = (
 				DECF8BBE1A48873600D49B26 /* ViewController.swift in Sources */,
 				DE8E8BD51A571B66003042EA /* ColourWheel.swift in Sources */,
+				DEA4641F1A829E0C007E42AF /* License.md in Sources */,
+				DEA4641D1A829D7E007E42AF /* README.md in Sources */,
 				DECF8BA01A48870E00D49B26 /* AppDelegate.swift in Sources */,
 				DECF8BBF1A4887C500D49B26 /* GradientView.swift in Sources */,
 			);

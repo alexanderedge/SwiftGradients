@@ -1,8 +1,16 @@
-SwiftGradients
+Gradient
 ==============
 
-Gradient app (mostly) converted to Swift. Comments / critiques / pull requests welcome.
+Gradient is an application to create gorgeous wallpapers for iPhone and iPad. Swipe to explore. Hold to adjust. Tap to capture. Shake to restart.
 
-The original app is written in Objective-C and is available [here](https://github.com/alexanderedge/Gradient).
+It is available for free on the [App Store](https://itunes.apple.com/gb/app/gradient-by-edit/id786219026?mt=8).
 
-![Screenshot](http://a2.mzstatic.com/eu/r30/Purple6/v4/a5/b9/6e/a5b96e74-6c73-0ee2-0168-806c9460873b/screen568x568.jpeg)
+Design and concept by [@byedit][nitzan-twitter], code by [@alexedge][alex-twitter].
+
+![screenshot](http://twitter.com/alexedge/status/562624310377189376/photo/1)
+
+## License
+See [License.md](License.md)
+
+[nitzan-twitter]: https://twitter.com/byedit
+[alex-twitter]: https://twitter.com/alexedge
