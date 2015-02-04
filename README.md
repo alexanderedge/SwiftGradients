@@ -7,7 +7,8 @@ It is available for free on the [App Store](https://itunes.apple.com/gb/app/grad
 
 Design and concept by [@byedit][nitzan-twitter], code by [@alexedge][alex-twitter].
 
-![screenshot](http://twitter.com/alexedge/status/562624310377189376/photo/1)
+## Screenshots
+![screenshot](http://i.imgur.com/iaJg8HS.png)
 
 ## License
 See [License.md](License.md)
