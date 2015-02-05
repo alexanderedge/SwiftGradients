@@ -206,7 +206,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIGestureRecognize
         label.userInteractionEnabled = true
         var paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .Center
-        paragraphStyle.lineSpacing = 100
+        paragraphStyle.lineSpacing = 70
         label.attributedText = NSAttributedString(string: NSLocalizedString("instructions", comment: "app instructions"), attributes:[NSForegroundColorAttributeName : UIColor.whiteColor(), NSParagraphStyleAttributeName : paragraphStyle])
         self.view.addSubview(label)
         self.instructions = label;
