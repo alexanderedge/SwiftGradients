@@ -111,7 +111,7 @@ class GradientView : View {
     }
     
     func colorAtPosition(position : Int) -> Color {
-        return Color(CGColor: self.colors[position])
+        return Color(CGColor: self.colors[position])!
     }
     
     func setColor(colour:Color, atPosition position: Int) {
