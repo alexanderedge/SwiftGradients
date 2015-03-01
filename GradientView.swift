@@ -42,7 +42,7 @@ extension Color {
     class func randomColour() -> Color {
         return Color(red: randomComponent(), green: randomComponent(), blue: randomComponent(), alpha: 1.0)
     }
-    func colorByShiftingHue(shift : CGFloat) -> UIColor {
+    func colorByShiftingHue(shift : CGFloat) -> Color {
         assert(shift < 1.0)
         var hue : CGFloat = 0
         var saturation : CGFloat = 0
@@ -53,7 +53,7 @@ extension Color {
         if hue > 1 {
             hue -= 1
         }
-        return UIColor(hue:hue, saturation: saturation, brightness: brightness, alpha: alpha);
+        return Color(hue:hue, saturation: saturation, brightness: brightness, alpha: alpha);
     }
 }
 
